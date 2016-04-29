@@ -26,10 +26,16 @@ class JsonPathOnlineEvaluator
       @resultEditor.getSession().setValue 'Json Parse Error'
       return
 
-    result = JSONPath(
-      json: json
-      path: query
-    )
+    try
+      result = JSONPath(
+        json: json
+        path: query
+      )
+      $('input').removeClass('jsonpath-error');
+    catch
+      $('input').addClass('jsonpath-error');
+      @resultEditor.getSession().setValue 'JSON Path Error'
+      return
 
     unless _.isEmpty(result)
       @resultEditor.getSession().setValue dump(result)

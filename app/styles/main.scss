@@ -5,6 +5,11 @@ $icon-font-path: '../bower_components/bootstrap-sass-official/assets/fonts/boots
 // endbower
 // scss-lint:enable all
 
+// jsonpath query error
+.jsonpath-error {
+  color: red;
+}
+
 .browsehappy {
   background: #ccc;
   color: #000;
@@ -47,15 +52,6 @@ body {
       margin-right: 10px;
     }
   }
-}
-
-.twitter {
-  width: 80px;
-}
-
-.pocket {
-  width: 90px;
-
 }
 
 .container-narrow > hr {
