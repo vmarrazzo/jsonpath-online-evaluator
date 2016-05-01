@@ -12,7 +12,12 @@ class JsonPathOnlineEvaluator
     $('input').on 'textchange', @evaluate
     @editor.on 'change', @evaluate
 
+    $('#examples').on 'mouseover', @showexamples
+
     @evaluate()
+
+  showexamples: =>
+    alert("Questo è un esempio!");
 
   evaluate: =>
     query = $('input').val()
