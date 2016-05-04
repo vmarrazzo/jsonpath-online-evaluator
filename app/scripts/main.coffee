@@ -9,18 +9,18 @@ class JsonPathOnlineEvaluator
     @resultEditor.setTheme("ace/theme/solarized_dark");
     @resultEditor.setReadOnly(true);
 
-    $('input').on 'textchange', @evaluate
+    $('input[name=jsonpath]').on 'textchange', @evaluate
     @editor.on 'change', @evaluate
 
-    $('#examples').on 'mouseover', @showexamples
+    $('input[name=url]').on 'textchange', @fetch
 
     @evaluate()
 
-  showexamples: =>
-    alert("Questo è un esempio!");
+  fetch: =>
+    $('form').submit();
 
   evaluate: =>
-    query = $('input').val()
+    query = $('input[name=jsonpath]').val()
     json_str = @editor.getValue()
 
     try
@@ -36,9 +36,9 @@ class JsonPathOnlineEvaluator
         json: json
         path: query
       )
-      $('input').removeClass('jsonpath-error');
+      $('input[name=jsonpath]').removeClass('jsonpath-error');
     catch
-      $('input').addClass('jsonpath-error');
+      $('input[name=jsonpath]').addClass('jsonpath-error');
       @resultEditor.getSession().setValue 'JSON Path Error'
       return
 
