@@ -17,7 +17,20 @@ class JsonPathOnlineEvaluator
     @evaluate()
 
   fetch: =>
-    $('form').submit();
+    $.ajax 
+      url: '/fetch-url'
+      type: 'POST'
+      dataType: 'json'
+      data :
+       url: $('input[name=url]').val()
+      success  : (data, status, xhr) ->
+          console.log("yea "+data)
+          # ???? .replace("undefined", "")
+          ace.edit("json-editor").setValue(JSON.stringify(data,null,4))
+      error    : (xhr, status, err) ->
+          console.log("nah "+err)
+      complete : (xhr, status) ->
+          console.log("comp")
 
   evaluate: =>
     query = $('input[name=jsonpath]').val()
