@@ -1,5 +1,16 @@
 {
   "name": "jsonpath-online-evaluator",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vmarrazzo/jsonpath-online-evaluator.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "url": "^0.11.0",
+    "log4js": "^0.6.38"
+  },
   "devDependencies": {
     "apache-server-configs": "^2.7.1",
     "grunt": "^0.4.5",

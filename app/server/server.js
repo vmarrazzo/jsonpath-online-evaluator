@@ -3,59 +3,131 @@ bodyParser = require('body-parser'),
 request = require('request'),
 url = require('url');
 
+var log4js = require('log4js');
+log4js.configure({
+	appenders: [
+		{
+			type: 'console'
+		},
+		{
+			type: 'file',
+			filename: 'server.log',
+			maxLogSize: 20480,
+			category: ['logger','console']
+		}
+	],
+	replaceConsole: true
+});
+
+var logger = log4js.getLogger('logger');
+//logger.setLevel('ERROR');
+
 var app = express();
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended:false})
 
 var server = app.listen(8081, function () {
 
-  var host = server.address().address
-  var port = server.address().port
+	var host = server.address().address
+	var port = server.address().port
 
-  console.log("JSONPath tester listening at http://%s:%s", host, port)
-
+	logger.info("JSONPath tester listening at http://%s:%s", host, port)
 });
 
 app.use(express.static('.'));
 
 // This responds a GET request for the /list_user page.
 app.get('/', function (req, res) {
-	console.log("Got a GET request for the homepage");
-   	res.sendFile( __dirname + "/" + "index.html" );
+	logger.info("HTTP GET request for the homepage");
+	res.sendFile( __dirname + "/" + "index.html" );
 });
 
-// This responds a POST request for the homepage
-app.post('/fetch-url', urlencodedParser, function (req, res) {
-   console.log("Got a POST request for the homepage");
+// jsonpath queries service for monitoring
+app.post('/jsonpath-queries' urlencodedParser, function(req,res) {
+	logger.info("jsonpath queries request for " + ......);
 
 	var urlPostField = req.body.url;
 
 	if ( urlPostField !== undefined && urlPostField !== '' ) {
 		
 		try {
-			var parsedUrl = url.parse(urlPostField);			
-			console.log('-----> ' + parsedUrl.href);
-			
+			var parsedUrl = url.parse(urlPostField);
+			logger.info('Requested url to fetch ' + parsedUrl.href);
+
+			// prendo il json in ingresso nel body
+			var body = req.body;
+			var queries = body.queries;
+
+			for(var query in queries){
+				logger.info("@@@@ Query id -> " + query[id] + " value -> " + query[query]);
+			}
+
+			// eseguo la query se mi riesce
+
+			// per ogni query nella richiesta eseguo jsonpath
+
+			// formatto risposta e mando
+
 			var jsonpathPostField = req.body.jsonpath;
 
-			request.get(
-				{
-					url:parsedUrl.href, 
-					json:true,
-					//encoding:"utf-8",
-					//proxy:'http://10.9.3.21:8080/',
-					timeout:10000
-				}).on('error', function (error) {
-					console.log(error);
-					res.send({"status":"error on fectch url"});
-				}).pipe(res);
+			request.get({
+				url:parsedUrl.href, 
+				json:true,
+				//encoding:"utf-8",
+				//proxy:'http://10.9.3.21:8080/',
+				timeout:10000
+			}).on('error', function (error) {
+				logger.error(error);
+				res.send({"status":"error on fectch url"});
+			}).pipe(res);
+
+
+
 		}
 		catch (error) {
+			logger.warning("Probably requested url is malformed")
 			res.send({"status":"probably url is malformed"});
 		}
-   	}
-   	else{
-   		console.log('Nothing to fetch!');
-   		res.sendFile( __dirname + "/" + "index.html" );
-   	}
+	}
+	else{
+		logger.debug("Can't work without url!");
+		res.send({"error":"missing url into request"});
+	}
+});
+
+
+// This responds a POST request for the homepage
+app.post('/fetch-url', urlencodedParser, function (req, res) {
+	logger.info("HTTP POST request for the homepage");
+
+	var urlPostField = req.body.url;
+
+	if ( urlPostField !== undefined && urlPostField !== '' ) {
+		
+		try {
+			var parsedUrl = url.parse(urlPostField);
+			logger.info('Requested url to fetch ' + parsedUrl.href);
+
+			//var jsonpathPostField = req.body.jsonpath;
+
+			request.get({
+				url:parsedUrl.href, 
+				json:true,
+				//encoding:"utf-8",
+				//proxy:'http://10.9.3.21:8080/',
+				timeout:10000
+			}).on('error', function (error) {
+				logger.error(error);
+				res.send({"status":"error on fectch url"});
+			}).pipe(res);
+		}
+		catch (error) {
+			logger.warning("Probably requested url is malformed")
+			res.send({"status":"probably url is malformed"});
+		}
+	}
+	else{
+		logger.debug("Nothing to fetch!");
+		res.sendFile( __dirname + "/" + "index.html" );
+	}
 });
