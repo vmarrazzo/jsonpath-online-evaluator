@@ -43,55 +43,65 @@ app.get('/', function (req, res) {
 });
 
 // jsonpath queries service for monitoring
-app.post('/jsonpath-queries' urlencodedParser, function(req,res) {
-	logger.info("jsonpath queries request for " + ......);
+app.post('/jsonpath-queries', urlencodedParser, function(req,res) {
+	logger.info("jsonpath queries request for something XXXY!");
 
-	var urlPostField = req.body.url;
+	try {
+		// prendo il json in ingresso nel body
+		var body = req.body;
+		var urlFromReq = body.url.link;
 
-	if ( urlPostField !== undefined && urlPostField !== '' ) {
+		var queries = body.queries;
 		
-		try {
-			var parsedUrl = url.parse(urlPostField);
-			logger.info('Requested url to fetch ' + parsedUrl.href);
+		var parsedUrl = url.parse(urlFromReq);
+		logger.info('Requested url to fetch ' + parsedUrl.href);
 
-			// prendo il json in ingresso nel body
-			var body = req.body;
-			var queries = body.queries;
+		var returnedData
 
-			for(var query in queries){
-				logger.info("@@@@ Query id -> " + query[id] + " value -> " + query[query]);
-			}
+		request.get({
+			url:parsedUrl.href, 
+			json:true,
+			//encoding:"utf-8",
+			//proxy:'http://10.9.3.21:8080/',
+			timeout:10000
+		}).on('error', function (error) {
+			logger.error(error);
+			res.send({"status":"error on fectch url"});
+		}).on('response', function(response) {
+    		logger.debug(body.url.description + " returns " + response.statusCode);
+    		logger.debug(response.headers['content-type']);
+    		returnedData = response.body;
+  		})
 
-			// eseguo la query se mi riesce
-
-			// per ogni query nella richiesta eseguo jsonpath
-
-			// formatto risposta e mando
-
-			var jsonpathPostField = req.body.jsonpath;
-
-			request.get({
-				url:parsedUrl.href, 
-				json:true,
-				//encoding:"utf-8",
-				//proxy:'http://10.9.3.21:8080/',
-				timeout:10000
-			}).on('error', function (error) {
-				logger.error(error);
-				res.send({"status":"error on fectch url"});
-			}).pipe(res);
-
-
-
+		for(var query in queries){
+			logger.info("@@@@ Query id -> " + query[id] + " value -> " + query[query]);
 		}
-		catch (error) {
-			logger.warning("Probably requested url is malformed")
-			res.send({"status":"probably url is malformed"});
-		}
+
+		// eseguo la query se mi riesce
+
+		// per ogni query nella richiesta eseguo jsonpath
+
+		// formatto risposta e mando
+
+		var jsonpathPostField = req.body.jsonpath;
+
+		request.get({
+			url:parsedUrl.href, 
+			json:true,
+			//encoding:"utf-8",
+			//proxy:'http://10.9.3.21:8080/',
+			timeout:10000
+		}).on('error', function (error) {
+			logger.error(error);
+			res.send({"status":"error on fectch url"});
+		}).pipe(res);
+
+
+
 	}
-	else{
-		logger.debug("Can't work without url!");
-		res.send({"error":"missing url into request"});
+	catch (error) {
+		logger.warning("Probably requested url is malformed")
+		res.send({"status":"probably url is malformed"});
 	}
 });
 
