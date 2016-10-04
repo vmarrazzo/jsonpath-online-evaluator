@@ -100,7 +100,7 @@ app.post('/jsonpath-queries', urlencodedParser, function(req,res) {
 
 	}
 	catch (error) {
-		logger.warning("Probably requested url is malformed")
+		logger.warn("Probably requested url is malformed")
 		res.send({"status":"probably url is malformed"});
 	}
 });
@@ -132,7 +132,7 @@ app.post('/fetch-url', urlencodedParser, function (req, res) {
 			}).pipe(res);
 		}
 		catch (error) {
-			logger.warning("Probably requested url is malformed")
+			logger.warn("Probably requested url is malformed")
 			res.send({"status":"probably url is malformed"});
 		}
 	}

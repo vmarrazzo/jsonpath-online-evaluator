@@ -15,6 +15,7 @@ class JsonPathOnlineEvaluator
     $('input[name=url]').on 'textchange', @fetch
 
     @evaluate()
+    $.growl.notice({ message: "Test your JSON Path query!", size: "large" })
 
   fetch: =>
     $.ajax 
@@ -29,6 +30,7 @@ class JsonPathOnlineEvaluator
           ace.edit("json-editor").setValue(JSON.stringify(data,null,4))
       error    : (xhr, status, err) ->
           console.log("nah "+err)
+          $.growl.error({ message: "Error when fetch JSON from Url!", size: "large" })
       complete : (xhr, status) ->
           console.log("comp")
 
@@ -53,6 +55,7 @@ class JsonPathOnlineEvaluator
     catch
       $('input[name=jsonpath]').addClass('jsonpath-error');
       @resultEditor.getSession().setValue 'JSON Path Error'
+      $.growl.error({ message: "JSON Path Error!", size: "large" })
       return
 
     unless _.isEmpty(result)
